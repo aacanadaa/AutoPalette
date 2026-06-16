@@ -44,6 +44,6 @@ jar {
 }
 
 loom {
-    accessWidenerPath.set(file("src/main/resources/artmapdraw.accesswidener"))
+    accessWidenerPath.set(file("src/main/resources/autopalette.accesswidener"))
 }
 

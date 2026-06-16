@@ -30,4 +30,4 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = 'artmap-auto-draw'
+rootProject.name = 'AutoPalette'

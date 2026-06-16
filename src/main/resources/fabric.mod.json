@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "id": "artmapdraw",
+  "id": "autopalette",
   "version": "${version}",
-  "name": "ArtMap Auto Draw",
+  "name": "AutoPalette",
   "description": "A client-side mod to automatically draw images on ArtMap canvases.",
   "authors": [
     "Developer"
@@ -11,19 +11,19 @@
     "homepage": "https://example.com"
   },
   "license": "MIT",
-  "icon": "assets/artmapdraw/icon.png",
+  "icon": "assets/autopalette/icon.png",
   "environment": "*",
   "entrypoints": {
     "main": [
-      "com.example.artmapdraw.ArtMapDraw"
+      "com.example.autopalette.ArtMapDraw"
     ],
     "client": [
-      "com.example.artmapdraw.client.ArtMapDrawClient"
+      "com.example.autopalette.client.ArtMapDrawClient"
     ]
   },
   "mixins": [
   ],
-  "accessWidener": "artmapdraw.accesswidener",
+  "accessWidener": "autopalette.accesswidener",
   "depends": {
     "fabricloader": ">=0.16.0",
     "minecraft": "~1.21.8",
