@@ -3,6 +3,8 @@
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Platform: Fabric](https://img.shields.io/badge/Platform-Fabric-orange.svg)](https://fabricmc.net/)
+[![Modrinth Downloads](https://img.shields.io/modrinth/dt/autopalette?style=flat-square&color=242629)](https://modrinth.com/mod/autopalette)
+[![GitHub Issues](https://img.shields.io/github/issues/aacanadaa/autopalette?style=flat-square&color=e6b800)](https://github.com/aacanadaa/autopalette/issues)
 
 Tired of sitting at an easel for hours, clicking pixel-by-pixel with dyes, just to paint a custom image in Minecraft? 
 
