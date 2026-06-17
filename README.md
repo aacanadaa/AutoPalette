@@ -26,7 +26,7 @@ AutoPalette is a lightweight, client-side Fabric mod for Minecraft 1.21.x that a
 
 ## How to Use
 
-1. **Import Images**: Put your image files (PNG or JPG) into the `.minecraft/config/artmapdraw/images/` directory.
+1. **Import Images**: Put your image files (PNG or JPG) into the `.minecraft/config/autopalette/images/` directory.
 2. **Open the GUI**: Sit on an ArtMap easel with a canvas, and press H to open the panel.
 3. **Set Up**: Select your image, toggle dithering, set your drawing delay, and choose your color limit.
    ![GUI in game](https://cdn.modrinth.com/data/cached_images/76bbe40e593a4f935f502cc590b1f84610ba0a36_0.webp)
