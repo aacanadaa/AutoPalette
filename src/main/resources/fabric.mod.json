@@ -5,10 +5,10 @@
   "name": "AutoPalette",
   "description": "A client-side mod to automatically draw images on ArtMap canvases.",
   "authors": [
-    "Developer"
+    "suoim"
   ],
   "contact": {
-    "homepage": "https://example.com"
+    "homepage": "https://modrinth.com/mod/autopalette"
   },
   "license": "MIT",
   "icon": "assets/autopalette/icon.png",
