@@ -43,10 +43,28 @@ public class DrawScreen extends Screen {
             "Snake",
             "Color-Optimized"
     };
-    private boolean dithering = true;
+    private int ditheringModeIndex = 1; // 0 = None, 1 = Floyd-Steinberg, 2 = Bayer 4x4, 3 = Bayer 8x8
     private int maxColorsIndex = 0;
     private final int[] colorLimits = { -1, 32, 16, 8 };
-    private int previewSize = 80;
+    private final int previewSize = 128;
+
+    private static final int[][] BAYER_4X4 = {
+        {  0,  8,  2, 10 },
+        { 12,  4, 14,  6 },
+        {  3, 11,  1,  9 },
+        { 15,  7, 13,  5 }
+    };
+
+    private static final int[][] BAYER_8X8 = {
+        {  0, 48, 12, 60,  3, 51, 15, 63 },
+        { 32, 16, 44, 28, 35, 19, 47, 31 },
+        {  8, 56,  4, 52, 11, 59,  7, 55 },
+        { 40, 24, 36, 20, 43, 27, 39, 23 },
+        {  2, 50, 14, 62,  1, 49, 13, 61 },
+        { 34, 18, 46, 30, 33, 17, 45, 29 },
+        { 10, 58,  6, 54,  9, 57,  5, 53 },
+        { 42, 26, 38, 22, 41, 25, 37, 21 }
+    };
 
     // Preview texture variables
     private NativeImageBackedTexture previewTexture = null;
@@ -65,7 +83,6 @@ public class DrawScreen extends Screen {
     private ButtonWidget matScrollUpButton;
     private ButtonWidget matScrollDownButton;
     private ButtonWidget maxColorsButton;
-    private ButtonWidget previewSizeButton;
 
     // Tab state
     private boolean showMaterialsTab = false;
@@ -73,7 +90,7 @@ public class DrawScreen extends Screen {
     private final List<MaterialEntry> materialsList = new ArrayList<>();
 
     public DrawScreen() {
-        super(Text.literal("AutoPalette Panel"));
+        super(Text.literal("AutoPalette Panel v1.1.0"));
     }
 
     @Override
@@ -125,8 +142,8 @@ public class DrawScreen extends Screen {
         }).dimensions(225, 80, 20, 20).build());
 
         // Dithering Button
-        ditheringButton = addDrawableChild(ButtonWidget.builder(Text.literal("Dithering: ON"), button -> {
-            dithering = !dithering;
+        ditheringButton = addDrawableChild(ButtonWidget.builder(Text.literal("Dithering: Floyd-Steinberg"), button -> {
+            ditheringModeIndex = (ditheringModeIndex + 1) % 4;
             updateButtonsText();
             loadSelectedImagePreview();
         }).dimensions(145, 105, 150, 20).build());
@@ -156,11 +173,12 @@ public class DrawScreen extends Screen {
             if (materialScrollOffset > 0) materialScrollOffset--;
         }).dimensions(280, 75, 15, 20).build());
 
+        // 7. Materials Tab Scroll Down Button
         matScrollDownButton = addDrawableChild(ButtonWidget.builder(Text.literal("▼"), button -> {
             if (materialScrollOffset < materialsList.size() - 8) materialScrollOffset++;
         }).dimensions(280, 100, 15, 20).build());
 
-        // 7. Start / Stop Draw Button
+        // 8. Start / Stop Draw Button
         drawButton = addDrawableChild(ButtonWidget.builder(Text.literal("START DRAWING"), button -> {
             if (AutoPainter.INSTANCE.isActive()) {
                 AutoPainter.INSTANCE.stopPainting();
@@ -170,17 +188,11 @@ public class DrawScreen extends Screen {
                         drawDelay,
                         smoothCam,
                         rotationSpeed,
-                        paintOrders[selectedOrderIndex],
-                        dithering
+                        paintOrders[selectedOrderIndex]
                 );
                 this.close();
             }
         }).dimensions(145, 205, 150, 20).build());
-
-        // 8. Preview Size Button
-        previewSizeButton = addDrawableChild(ButtonWidget.builder(Text.literal("Size: 80x80"), button -> {
-            togglePreviewSize();
-        }).dimensions(300, 185, 80, 20).build());
 
         updateButtonsText();
         updateListButtonLabels();
@@ -203,12 +215,18 @@ public class DrawScreen extends Screen {
     }
 
     private void updateButtonsText() {
-        ditheringButton.setMessage(Text.literal("Dithering: " + (dithering ? "ON" : "OFF")));
+        String ditheringText = switch (ditheringModeIndex) {
+            case 0 -> "None";
+            case 1 -> "Floyd-Steinberg";
+            case 2 -> "Bayer 4x4";
+            case 3 -> "Bayer 8x8";
+            default -> "None";
+        };
+        ditheringButton.setMessage(Text.literal("Dithering: " + ditheringText));
         smoothCamButton.setMessage(Text.literal("Smooth Cam: " + (smoothCam ? "ON" : "OFF")));
         orderButton.setMessage(Text.literal("Order: " + getShortOrderName(paintOrders[selectedOrderIndex])));
         int limit = colorLimits[maxColorsIndex];
         maxColorsButton.setMessage(Text.literal("Max Colors: " + (limit == -1 ? "Unlimited" : limit)));
-        previewSizeButton.setMessage(Text.literal("Size: " + previewSize + "x" + previewSize));
         
         if (AutoPainter.INSTANCE.isActive()) {
             drawButton.setMessage(Text.literal("STOP DRAWING"));
@@ -316,7 +334,7 @@ public class DrawScreen extends Screen {
                 }
             }
 
-            if (dithering) {
+            if (ditheringModeIndex == 1) {
                 // Floyd-Steinberg Dithering
                 double[][][] rgbGrid = new double[128][128][3];
                 for (int y = 0; y < 128; y++) {
@@ -350,8 +368,37 @@ public class DrawScreen extends Screen {
                         previewImg.setColor(x, y, abgr);
                     }
                 }
+            } else if (ditheringModeIndex == 2 || ditheringModeIndex == 3) {
+                // Ordered Bayer Dithering (4x4 or 8x8)
+                int size = (ditheringModeIndex == 2) ? 4 : 8;
+                int[][] bayerMatrix = (ditheringModeIndex == 2) ? BAYER_4X4 : BAYER_8X8;
+                double spread = 32.0;
+
+                for (int y = 0; y < 128; y++) {
+                    for (int x = 0; x < 128; x++) {
+                        int rgb = resized.getRGB(x, y);
+                        int origR = (rgb >> 16) & 0xFF;
+                        int origG = (rgb >> 8) & 0xFF;
+                        int origB = rgb & 0xFF;
+
+                        double factor = (bayerMatrix[x % size][y % size] + 0.5) / (size * size) - 0.5;
+                        int r = (int) (origR + factor * spread);
+                        int g = (int) (origG + factor * spread);
+                        int b = (int) (origB + factor * spread);
+
+                        r = Math.min(255, Math.max(0, r));
+                        g = Math.min(255, Math.max(0, g));
+                        b = Math.min(255, Math.max(0, b));
+
+                        ArtMapPalette.MappedColor closest = getClosestColorFrom(r, g, b, allowedBaseEntries);
+                        mappedColorsGrid[x][y] = closest;
+
+                        int abgr = 0xFF000000 | (closest.b << 16) | (closest.g << 8) | closest.r;
+                        previewImg.setColor(x, y, abgr);
+                    }
+                }
             } else {
-                // Direct Nearest Color mapping
+                // Direct Nearest Color mapping (None)
                 for (int y = 0; y < 128; y++) {
                     for (int x = 0; x < 128; x++) {
                         int rgb = resized.getRGB(x, y);
@@ -486,10 +533,6 @@ public class DrawScreen extends Screen {
             context.fill(progressX, progressY, progressX + progressWidth, progressY + 6, 0xFF333333);
             context.fill(progressX, progressY, progressX + progressVal, progressY + 6, 0xFF00FF00);
         }
- 
-        // Reposition preview size button
-        int sizeButtonY = previewY + previewSize + 55;
-        previewSizeButton.setY(sizeButtonY);
     }
 
     public static class MaterialEntry {
@@ -600,19 +643,6 @@ public class DrawScreen extends Screen {
             return true;
         }
         return super.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
-    }
-
-    private void togglePreviewSize() {
-        if (previewSize == 80) {
-            previewSize = 100;
-        } else if (previewSize == 100) {
-            previewSize = 128;
-        } else if (previewSize == 128) {
-            previewSize = 64;
-        } else {
-            previewSize = 80;
-        }
-        updateButtonsText();
     }
 
     @Override

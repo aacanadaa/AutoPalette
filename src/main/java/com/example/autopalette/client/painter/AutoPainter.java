@@ -30,7 +30,6 @@ public class AutoPainter {
     private boolean smoothRotation = true;
     private float maxRotationSpeed = 30.0f; // degrees per tick
     private String paintOrder = "Color-Optimized";
-    private boolean useDithering = false;
 
     // Queue of low-level draw steps
     private final Queue<ActionStep> stepQueue = new LinkedList<>();
@@ -110,7 +109,7 @@ public class AutoPainter {
         return active;
     }
 
-    public void startPainting(ArtMapPalette.MappedColor[][] colors, int delay, boolean smooth, float rotSpeed, String order, boolean dither) {
+    public void startPainting(ArtMapPalette.MappedColor[][] colors, int delay, boolean smooth, float rotSpeed, String order) {
         if (client.player == null || client.world == null) return;
         
         activeCanvas = findEaselCanvas();
@@ -124,7 +123,6 @@ public class AutoPainter {
         this.smoothRotation = smooth;
         this.maxRotationSpeed = rotSpeed;
         this.paintOrder = order;
-        this.useDithering = dither;
         this.stepQueue.clear();
         this.tickCounter = 0;
         this.missingItemName = null;

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "autopalette",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "name": "AutoPalette",
   "description": "A client-side mod to automatically draw images on ArtMap canvases.",
   "authors": [
