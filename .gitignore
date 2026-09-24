@@ -1,0 +1,35 @@
+# Gradle
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.ipr
+*.iws
+out/
+
+# VS Code
+.vscode/
+
+# Eclipse
+.metadata/
+.classpath
+.project
+.settings/
+bin/
+
+# Minecraft client run directories (Fabric Loom)
+/run/
+/runClient/
+/runServer/
+/runGameTestServer/
+/runData/
+
+# Logs and temporary files
+*.log
+*.tmp
+.DS_Store
+Thumbs.db
+desktop.ini
