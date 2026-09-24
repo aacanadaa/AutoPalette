@@ -1,8 +1,10 @@
 # AutoPalette (Client-Side)
 
 [![Modrinth](https://img.shields.io/modrinth/v/autopalette?label=Modrinth&logo=modrinth)](https://modrinth.com/mod/autopalette)
+[![CurseForge](https://img.shields.io/curseforge/v/1577747?label=CurseForge&logo=curseforge&color=F16436)](https://www.curseforge.com/minecraft/mc-mods/artmap-autopalette)
 [![Minecraft](https://img.shields.io/modrinth/game-versions/autopalette?label=Minecraft)](https://modrinth.com/mod/autopalette/versions)
 [![Downloads](https://img.shields.io/modrinth/dt/autopalette?label=Downloads&logo=modrinth)](https://modrinth.com/mod/autopalette)
+[![CurseForge Downloads](https://img.shields.io/curseforge/dt/1577747?label=Downloads&logo=curseforge&color=F16436)](https://www.curseforge.com/minecraft/mc-mods/artmap-autopalette)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 [![Ko-fi](https://img.shields.io/badge/Ko--fi-Support%20me-ff5e5b?logo=kofi&logoColor=white)](https://ko-fi.com/suoim)
 
